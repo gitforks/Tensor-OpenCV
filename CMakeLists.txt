@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 3.2)
 project(Tensor-OpenCV)
 
+SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+
 include(ExternalProject)
+include(mshadow)
 
 if (DEFINED SION_PROJECT_BINARY_DIR)
 	SET(CMAKE_INSTALL_PREFIX "${SION_PROJECT_BINARY_DIR}")
