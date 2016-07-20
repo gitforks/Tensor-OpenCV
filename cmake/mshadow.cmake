@@ -1,6 +1,7 @@
 set(mshadow_LINKER_LIBS "")
 
 set(BLAS "Open" CACHE STRING "Selected BLAS library")
+SET(USE_CUDA OFF CACHE BOOL "Enable GPU Tensor")
 set_property(CACHE BLAS PROPERTY STRINGS "Atlas;Open;MKL")
 
 if(BLAS STREQUAL "Atlas" OR BLAS STREQUAL "atlas")
