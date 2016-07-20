@@ -1,0 +1,6 @@
+[submodule "Tensor"]
+	path = Tensor
+	url = https://github.com/SionProject/Tensor.git
+[submodule "external/Tensor"]
+	path = external/Tensor
+	url = https://github.com/SionProject/Tensor.git
