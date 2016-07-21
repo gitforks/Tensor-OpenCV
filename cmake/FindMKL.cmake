@@ -103,12 +103,12 @@ find_library(MKL_INTELTHREAD_LIBRARY
     ${MKL_ROOT_DIR}/lib/
 )
 
-find_library(MKL_GNUTHREAD_LIBRARY
-  mkl_gnu_thread
-  PATHS
-    ${MKL_ROOT_DIR}/lib/${MKL_ARCH_DIR}
-    ${MKL_ROOT_DIR}/lib/
-)
+#find_library(MKL_GNUTHREAD_LIBRARY
+#  mkl_gnu_thread
+#  PATHS
+#    ${MKL_ROOT_DIR}/lib/${MKL_ARCH_DIR}
+#    ${MKL_ROOT_DIR}/lib/
+#)
 
 # Intel Libraries
 IF("${MKL_ARCH_DIR}" STREQUAL "32")
