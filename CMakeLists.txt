@@ -5,7 +5,7 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 include(GitExternal)
 
 add_subdirectory("${CMAKE_SOURCE_DIR}/external/Tensor" "${CMAKE_CURRENT_BINARY_DIR}/external/Tensor")
-add_subdirectory("${CMAKE_SOURCE_DIR}/external/Tensor-ImProc" "${CMAKE_CURRENT_BINARY_DIR}/external/Tensor-ImProc")
+add_subdirectory("${CMAKE_SOURCE_DIR}/external/ImProc" "${CMAKE_CURRENT_BINARY_DIR}/external/ImProc")
 include("SionProject.cmake")
 
 find_package(OpenCV REQUIRED)

@@ -7,6 +7,7 @@
 #include <cstdio>
 
 #include <Sion/Tensor/OpenCV.hpp>
+#include <Sion/ImProc.hpp>
 
 #include "tinyfiledialogs.h"
 
@@ -40,6 +41,8 @@ const char *exts[] = {
 
 int main(int argc, char **argv)
 {
+	mshadow::InitTensorEngine<mshadow::cpu>();
+
 	auto fn = tinyfd_openFileDialog("Select a Image", "test.jpg", sizeof(exts) / sizeof(char *), exts, "", 0);
 
 	if (!fn)
@@ -51,9 +54,27 @@ int main(int argc, char **argv)
 
 	auto v = Sion::Tensor::OpenCV::Mat2Tensor<mshadow::cpu, 3, float>()(m);
 	v /= 255.0f;
-	auto n = Sion::Tensor::OpenCV::Tensor2Mat<mshadow::cpu, 3, float>()(v);
 
-	cv::imshow("test", n);
+	auto r = Sion::ImProc::rgb2gray<mshadow::cpu, 3, float>()(v);
+
+	{
+		auto o = Sion::ImProc::imresize<mshadow::cpu, 3, float, Sion::ImProc::ImResize::Nearest<float>>(1024, -1)(v);
+		auto n = Sion::Tensor::OpenCV::Tensor2Mat<mshadow::cpu, 3, float>()(o);
+		cv::imshow("Nearest", n);
+	}
+
+	{
+		auto o = Sion::ImProc::imresize<mshadow::cpu, 3, float, Sion::ImProc::ImResize::Bilinear<float>>(1024, -1)(v);
+		auto n = Sion::Tensor::OpenCV::Tensor2Mat<mshadow::cpu, 3, float>()(o);
+		cv::imshow("Bilinear", n);
+	}
+
+	{
+		auto o = Sion::ImProc::imresize<mshadow::cpu, 3, float, Sion::ImProc::ImResize::Bicubic<float>>(1024, -1)(v);
+		auto n = Sion::Tensor::OpenCV::Tensor2Mat<mshadow::cpu, 3, float>()(o);
+		cv::imshow("Bicubic", n);
+	}
+
 	cv::waitKey();
 
 
