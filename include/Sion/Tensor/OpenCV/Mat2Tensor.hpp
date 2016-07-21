@@ -27,7 +27,7 @@ void CopyMat2Tensor3(Tensor<cpu, 3, DType> &ret, const cv::Mat &mat)
 
 			for (int k = 0; k < c; ++k)
 			{
-				ret.dptr_[(i * ret.stride_ + j) * c + k] = *(col + k);
+				ret.dptr_[(i * ret.size(1) + j) * ret.stride_ + k] = *(col + k);
 			}
 		}
 	}
@@ -55,13 +55,11 @@ struct Mat2Tensor<cpu, 3, DType> {
 
 		auto c = mat.channels();
 
-		mshadow::Shape<3> Shape;
-
-		Shape[0] = mat.rows;
-		Shape[1] = mat.cols;
-		Shape[2] = c;
+		printf("l: %d %d %d\n", mat.rows, mat.cols, mat.channels());
+		auto Shape = mshadow::Shape3(mat.rows, mat.cols, c);
 		
 		Tensor<cpu, 3, DType> ret = mshadow::NewTensor<cpu, DType, 3>(Shape, 0.f);
+		printf("v: %d\n", ret.stride_);
 
 		switch (mat.depth())
 		{

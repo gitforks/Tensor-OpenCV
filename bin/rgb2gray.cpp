@@ -10,11 +10,6 @@
 
 #include "tinyfiledialogs.h"
 
-const char *exts[] = {
-	"*.jpg",
-	"*.png",
-};
-
 std::string type2str(int type) {
 	std::string r;
 
@@ -38,6 +33,11 @@ std::string type2str(int type) {
   return r;
 }
 
+const char *exts[] = {
+	"*.jpg",
+	"*.png",
+};
+
 int main(int argc, char **argv)
 {
 	auto fn = tinyfd_openFileDialog("Select a Image", "test.jpg", sizeof(exts) / sizeof(char *), exts, "", 0);
@@ -51,18 +51,9 @@ int main(int argc, char **argv)
 
 	auto v = Sion::Tensor::OpenCV::Mat2Tensor<mshadow::cpu, 3, float>()(m);
 	v /= 255.0f;
-
-	for (int i = 0; i < 3; ++i)
-	{
-		printf("d: %d : %d\n", i, v.size(i));
-	}
-
 	auto n = Sion::Tensor::OpenCV::Tensor2Mat<mshadow::cpu, 3, float>()(v);
 
-	printf("m: %s n: %s\n", type2str(m.type()).c_str(), type2str(n.type()).c_str());
-
 	cv::imshow("test", n);
-
 	cv::waitKey();
 
 
