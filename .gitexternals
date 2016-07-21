@@ -1,2 +1,3 @@
 # -*- mode: cmake -*-
 # external/Tensor https://github.com/SionProject/Tensor.git master
+# external/Tensor-ImProc https://github.com/SionProject/Tensor-ImProc.git master
