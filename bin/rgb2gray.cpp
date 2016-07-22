@@ -39,6 +39,8 @@ const char *exts[] = {
 	"*.png",
 };
 
+using BLAS = Sion::Tensor::blas<Sion::Tensor::cpu, float>;
+
 int main(int argc, char **argv)
 {
 	using namespace Sion::Tensor;
@@ -53,29 +55,70 @@ int main(int argc, char **argv)
 	auto m = cv::imread(fn);
 
 	auto v = Sion::Tensor::OpenCV::Mat2Tensor<cpu, float>()(m);
-	//v /= 255.0f;
-	auto n = Sion::Tensor::OpenCV::Tensor2Mat<cpu, float>()(v);
-	cv::imshow("Test", n);
+	BLAS::scal(v, 1.0f / 255.0f);
 
-	//auto r = Sion::ImProc::rgb2gray<mshadow::cpu, 3, float>()(v);
+	{
+		auto n = Sion::Tensor::OpenCV::Tensor2Mat<cpu, float>()(v);
+		cv::imshow("RGB", n);
+	}
 
-	//{
-	//	auto o = Sion::ImProc::imresize<mshadow::cpu, 3, float, Sion::ImProc::ImResize::Nearest<float>>(1024, -1)(v);
-	//	auto n = Sion::Tensor::OpenCV::Tensor2Mat<mshadow::cpu, 3, float>()(o);
-	//	cv::imshow("Nearest", n);
-	//}
+	v = Sion::ImProc::rgb2gray<cpu, float>()(v);
+	v = Sion::ImProc::imresize<cpu, float, Sion::ImProc::ImResize::Bicubic<float>>(1024, -1)(v);
+	
+	{
+		auto n = Sion::Tensor::OpenCV::Tensor2Mat<cpu, float>()(v);
+		cv::imshow("GrayScale", n);
+	}
 
-	//{
-	//	auto o = Sion::ImProc::imresize<mshadow::cpu, 3, float, Sion::ImProc::ImResize::Bilinear<float>>(1024, -1)(v);
-	//	auto n = Sion::Tensor::OpenCV::Tensor2Mat<mshadow::cpu, 3, float>()(o);
-	//	cv::imshow("Bilinear", n);
-	//}
+	{
+		float filter_data_h[9] = {
+			-1, -2, -1,
+			 0,  0,  0,
+			 1,  2,  1,
+		};
 
-	//{
-	//	auto o = Sion::ImProc::imresize<mshadow::cpu, 3, float, Sion::ImProc::ImResize::Bicubic<float>>(1024, -1)(v);
-	//	auto n = Sion::Tensor::OpenCV::Tensor2Mat<mshadow::cpu, 3, float>()(o);
-	//	cv::imshow("Bicubic", n);
-	//}
+		float filter_data_t[9] = {
+			-1,  0,  1,
+			-2,  0,  2,
+			-1,  0,  1,
+		};
+
+		Tensor<cpu, float> filter;
+
+		filter.ndims = 2;
+		filter.dims[0] = 3;
+		filter.dims[1] = 3;
+		filter.stride = 3;
+		
+		filter.data = filter_data_h;
+		auto h = Sion::ImProc::imfilter<cpu, float>(filter)(v);
+		filter.data = filter_data_t;
+		auto t = Sion::ImProc::imfilter<cpu, float>(filter)(v);
+
+		struct Pow {
+			float v = 2.0f;
+
+			float operator()(float x)
+			{
+				return std::pow(x, v);
+			}
+		} pow;
+
+		struct Sqrt {
+			float operator()(float x)
+			{
+				return std::sqrt(x);
+			}
+		};
+
+		Sion::Tensor::apply<cpu, float, Pow>()(h);
+		Sion::Tensor::apply<cpu, float, Pow>()(t);
+		Sion::Tensor::apply<cpu, float, Sqrt>()(t);
+		BLAS::axpy(1, h, t);
+
+		auto n = Sion::Tensor::OpenCV::Tensor2Mat<cpu, float>()(t);
+		cv::imshow("Sobel", n);
+	}
 
 	cv::waitKey();
 
