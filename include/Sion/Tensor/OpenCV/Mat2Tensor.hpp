@@ -13,7 +13,7 @@ namespace OpenCV {
 namespace {
 
 template<typename DType, typename SType>
-void CopyMat2Tensor3(Tensor<cpu, 3, DType> &ret, const cv::Mat &mat)
+void CopyMat2Tensor3(Tensor<cpu, DType> &ret, const cv::Mat &mat)
 {
 	int c = mat.channels();
 
@@ -27,7 +27,7 @@ void CopyMat2Tensor3(Tensor<cpu, 3, DType> &ret, const cv::Mat &mat)
 
 			for (int k = 0; k < c; ++k)
 			{
-				ret.dptr_[(i * ret.size(1) + j) * ret.stride_ + k] = *(col + k);
+				ret.data[(i * ret.dims[1] + j) * ret.stride + k] = *(col + k);
 			}
 		}
 	}
@@ -35,19 +35,18 @@ void CopyMat2Tensor3(Tensor<cpu, 3, DType> &ret, const cv::Mat &mat)
 
 } // namespace {}
 
-template<typename Device, int dimension, typename DType = float>
+template<typename Engine, typename DType = float>
 struct Mat2Tensor {
-	Tensor<Device, dimension, DType> operator()(const cv::Mat &mat)
+	Tensor<Engine, DType> operator()(const cv::Mat &mat)
 	{
 		static_assert(0, "Not Implemented");
 	}
 };
 
 template<typename DType>
-struct Mat2Tensor<cpu, 3, DType> {
-	Tensor<cpu, 3, DType> operator()(const cv::Mat &mat)
+struct Mat2Tensor<cpu, DType> {
+	Tensor<cpu, DType> operator()(const cv::Mat &mat)
 	{
-
 		if (mat.dims != 2)
 		{
 			throw DimensionMismatchException(2, mat.dims);
@@ -55,11 +54,9 @@ struct Mat2Tensor<cpu, 3, DType> {
 
 		auto c = mat.channels();
 
-		printf("l: %d %d %d\n", mat.rows, mat.cols, mat.channels());
-		auto Shape = mshadow::Shape3(mat.rows, mat.cols, c);
-		
-		Tensor<cpu, 3, DType> ret = mshadow::NewTensor<cpu, DType, 3>(Shape, 0.f);
-		printf("v: %d\n", ret.stride_);
+		//printf("l: %d %d %d\n", mat.rows, mat.cols, mat.channels());
+		auto ret = NewTensor<cpu, DType>(mat.rows, mat.cols, c);
+		//printf("v: %d\n", ret.stride_);
 
 		switch (mat.depth())
 		{

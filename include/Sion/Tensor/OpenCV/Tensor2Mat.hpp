@@ -11,7 +11,7 @@ namespace Tensor {
 namespace OpenCV {
 
 template<typename DType>
-void CopyTensor2Mat3(cv::Mat &mat, const Tensor<cpu, 3, DType> &Tensor)
+void CopyTensor2Mat3(cv::Mat &mat, const Tensor<cpu, DType> &T)
 {
 	int c = mat.channels();
 
@@ -25,14 +25,14 @@ void CopyTensor2Mat3(cv::Mat &mat, const Tensor<cpu, 3, DType> &Tensor)
 
 			for (int k = 0; k < c; ++k)
 			{
-				*(col + k) = Tensor.dptr_[(i * Tensor.size(1)  + j) * Tensor.stride_ + k];
+				*(col + k) = T.data[(i * T.dims[1] + j) * T.stride + k];
 			}
 		}
 	}
 }
 
 template<typename DType>
-void CopyTensor2Mat2(cv::Mat &mat, const Tensor<cpu, 2, DType> &Tensor)
+void CopyTensor2Mat2(cv::Mat &mat, const Tensor<cpu, DType> &T)
 {
 	int c = mat.channels();
 
@@ -44,47 +44,49 @@ void CopyTensor2Mat2(cv::Mat &mat, const Tensor<cpu, 2, DType> &Tensor)
 		{
 			auto col = row + c * j;
 
-			*col = Tensor.dptr_[i * Tensor.stride_ + j];
+			*col = T.data[i * T.stride + j];
 		}
 	}
 }
 
-template<typename Device, int dimension, typename DType = float>
+template<typename Engine, typename DType = float>
 struct Tensor2Mat {
-	void operator()(const Tensor<Device, dimension, DType> &Tensor)
+	void operator()(const Tensor<Engine, DType> &T)
 	{
-		static_assert(0, "Not Implemented");
+		static_assert(0, "Not implemented");
 	}
 };
 
 template<typename DType>
-struct Tensor2Mat<cpu, 2, DType> {
-	cv::Mat operator()(const Tensor<cpu, 2, DType> &Tensor)
+struct Tensor2Mat<cpu, DType> {
+	cv::Mat operator()(const Tensor<cpu, DType> &T)
 	{
 		int type = cv::DataType<DType>::type;
 
-		cv::Mat ret(Tensor.size(0), Tensor.size(1), type);
+		cv::Mat ret;
 
-		CopyTensor2Mat2(ret, Tensor);
+		if (T.ndims == 2)
+		{
+			ret = cv::Mat(T.dims[0], T.dims[1], type);
+
+			CopyTensor2Mat2(ret, T);
+		}
+		else if (T.ndims == 3)
+		{
+			int type = CV_MAKE_TYPE(cv::DataType<DType>::depth, T.dims[2]);
+
+			ret = cv::Mat(T.dims[0], T.dims[1], type);
+
+			CopyTensor2Mat3(ret, T);
+		}
+		else
+		{
+			throw std::runtime_error("Unsupported Size!!");
+		}
 
 		return ret;
 	}
 };
-
-template<typename DType>
-struct Tensor2Mat<cpu, 3, DType> {
-	cv::Mat operator()(const Tensor<cpu, 3, DType> &Tensor)
-	{
-		int type = CV_MAKE_TYPE(cv::DataType<DType>::depth, Tensor.size(2));
-
-		cv::Mat ret(Tensor.size(0), Tensor.size(1), type);
-
-		CopyTensor2Mat3(ret, Tensor);
-
-		return ret;
-	}
-};
-
 
 } // namespace OpenCV
 } // namespace Tensor

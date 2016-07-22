@@ -41,7 +41,7 @@ const char *exts[] = {
 
 int main(int argc, char **argv)
 {
-	mshadow::InitTensorEngine<mshadow::cpu>();
+	using namespace Sion::Tensor;
 
 	auto fn = tinyfd_openFileDialog("Select a Image", "test.jpg", sizeof(exts) / sizeof(char *), exts, "", 0);
 
@@ -52,28 +52,30 @@ int main(int argc, char **argv)
 
 	auto m = cv::imread(fn);
 
-	auto v = Sion::Tensor::OpenCV::Mat2Tensor<mshadow::cpu, 3, float>()(m);
-	v /= 255.0f;
+	auto v = Sion::Tensor::OpenCV::Mat2Tensor<cpu, float>()(m);
+	//v /= 255.0f;
+	auto n = Sion::Tensor::OpenCV::Tensor2Mat<cpu, float>()(v);
+	cv::imshow("Test", n);
 
-	auto r = Sion::ImProc::rgb2gray<mshadow::cpu, 3, float>()(v);
+	//auto r = Sion::ImProc::rgb2gray<mshadow::cpu, 3, float>()(v);
 
-	{
-		auto o = Sion::ImProc::imresize<mshadow::cpu, 3, float, Sion::ImProc::ImResize::Nearest<float>>(1024, -1)(v);
-		auto n = Sion::Tensor::OpenCV::Tensor2Mat<mshadow::cpu, 3, float>()(o);
-		cv::imshow("Nearest", n);
-	}
+	//{
+	//	auto o = Sion::ImProc::imresize<mshadow::cpu, 3, float, Sion::ImProc::ImResize::Nearest<float>>(1024, -1)(v);
+	//	auto n = Sion::Tensor::OpenCV::Tensor2Mat<mshadow::cpu, 3, float>()(o);
+	//	cv::imshow("Nearest", n);
+	//}
 
-	{
-		auto o = Sion::ImProc::imresize<mshadow::cpu, 3, float, Sion::ImProc::ImResize::Bilinear<float>>(1024, -1)(v);
-		auto n = Sion::Tensor::OpenCV::Tensor2Mat<mshadow::cpu, 3, float>()(o);
-		cv::imshow("Bilinear", n);
-	}
+	//{
+	//	auto o = Sion::ImProc::imresize<mshadow::cpu, 3, float, Sion::ImProc::ImResize::Bilinear<float>>(1024, -1)(v);
+	//	auto n = Sion::Tensor::OpenCV::Tensor2Mat<mshadow::cpu, 3, float>()(o);
+	//	cv::imshow("Bilinear", n);
+	//}
 
-	{
-		auto o = Sion::ImProc::imresize<mshadow::cpu, 3, float, Sion::ImProc::ImResize::Bicubic<float>>(1024, -1)(v);
-		auto n = Sion::Tensor::OpenCV::Tensor2Mat<mshadow::cpu, 3, float>()(o);
-		cv::imshow("Bicubic", n);
-	}
+	//{
+	//	auto o = Sion::ImProc::imresize<mshadow::cpu, 3, float, Sion::ImProc::ImResize::Bicubic<float>>(1024, -1)(v);
+	//	auto n = Sion::Tensor::OpenCV::Tensor2Mat<mshadow::cpu, 3, float>()(o);
+	//	cv::imshow("Bicubic", n);
+	//}
 
 	cv::waitKey();
 
