@@ -7,11 +7,11 @@ include(GitExternal)
 git_external(external/Tensor https://github.com/SionProject/Tensor.git master)
 git_external(external/ImProc https://github.com/SionProject/ImProc.git master)
 
-add_library(sion_tensor_opencv src/Exception.cpp)
+add_library(sion_tensor_opencv ${CMAKE_CURRENT_LIST_DIR}/src/Exception.cpp)
 target_link_libraries(sion_tensor_opencv sion_tensor)
 target_link_libraries(sion_tensor_opencv ${OpenCV_LIBS})
 
-add_executable(rgb2gray bin/rgb2gray.cpp bin/tinyfiledialogs.c)
+add_executable(rgb2gray ${CMAKE_CURRENT_LIST_DIR}/bin/rgb2gray.cpp ${CMAKE_CURRENT_LIST_DIR}/bin/tinyfiledialogs.c)
 target_link_libraries(rgb2gray sion_tensor_opencv)
 
 include("${CMAKE_SOURCE_DIR}/external/Tensor/SionProject.cmake")
