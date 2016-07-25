@@ -4,7 +4,8 @@ SET(SION_TENSOR_OPENCV true)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 include(GitExternal)
 
-find_package(OpenCV REQUIRED)
+git_external(external/Tensor https://github.com/SionProject/Tensor.git master)
+git_external(external/ImProc https://github.com/SionProject/ImProc.git master)
 
 add_library(sion_tensor_opencv src/Exception.cpp)
 target_link_libraries(sion_tensor_opencv sion_tensor)
