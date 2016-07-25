@@ -27,7 +27,7 @@ void CopyMat2Tensor3(Tensor<cpu, DType> &ret, const cv::Mat &mat)
 
 			for (int k = 0; k < c; ++k)
 			{
-				ret.data[(i * ret.dims[1] + j) * ret.stride + k] = *(col + k);
+				ret.data[(i * ret.dims[1] + j) * ret.dims[2] + k] = *(col + k);
 			}
 		}
 	}

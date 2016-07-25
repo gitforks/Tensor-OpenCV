@@ -25,7 +25,7 @@ void CopyTensor2Mat3(cv::Mat &mat, const Tensor<cpu, DType> &T)
 
 			for (int k = 0; k < c; ++k)
 			{
-				*(col + k) = T.data[(i * T.dims[1] + j) * T.stride + k];
+				*(col + k) = T.data[(i * T.dims[1] + j) * T.dims[2] + k];
 			}
 		}
 	}
@@ -44,7 +44,7 @@ void CopyTensor2Mat2(cv::Mat &mat, const Tensor<cpu, DType> &T)
 		{
 			auto col = row + c * j;
 
-			*col = T.data[i * T.stride + j];
+			*col = T.data[i * T.dims[1] + j];
 		}
 	}
 }
