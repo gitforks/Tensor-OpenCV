@@ -7,6 +7,8 @@ include(GitExternal)
 git_external(external/Tensor https://github.com/SionProject/Tensor.git master)
 git_external(external/ImProc https://github.com/SionProject/ImProc.git master)
 
+find_package(OpenCV REQUIRED)
+
 add_library(sion_tensor_opencv ${CMAKE_CURRENT_LIST_DIR}/src/Exception.cpp)
 target_link_libraries(sion_tensor_opencv sion_tensor)
 target_link_libraries(sion_tensor_opencv ${OpenCV_LIBS})
